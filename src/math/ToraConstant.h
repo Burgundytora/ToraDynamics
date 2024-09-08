@@ -5,7 +5,7 @@
 #ifndef TORA_CONSTANT_DEFINES_H_
 #define TORA_CONSTANT_DEFINES_H_
 
-namespace Tora{
+namespace Tora {
 
 using Real = double;
 
@@ -26,6 +26,6 @@ static const Real LOG10E = 0.43429448190325182765;
 static const Real LN2 = 0.69314718055994530941;
 static const Real LN10 = 2.30258509299404568402;
 
-} // end namespace Tora
+}  // end namespace Tora
 
 #endif
