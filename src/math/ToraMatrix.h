@@ -1,3 +1,7 @@
+// =============================================================================
+// Authors: Tora
+// =============================================================================
+
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
 
@@ -29,22 +33,22 @@ namespace Tora {
 /// Dense matrix with *dynamic size* (i.e., with unknown at compile time) and row-major storage.
 /// A MatrixDynamic is templated by the coefficient type (default: double).
 template <typename T = double>
-using MatrixDynamic = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+using ToraMatrixDynamic = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
 /// Dense matrix with *fixed size* (known at compile time) and row-major storage.
 /// A MatrixNM is templated by the coefficient type and by the matrix dimensions (number of rows and columns).
 template <typename T, int M, int N>
-using MatrixNM = Eigen::Matrix<T, M, N, Eigen::RowMajor>;
+using ToraMatrixNM = Eigen::Matrix<T, M, N, Eigen::RowMajor>;
 
 /// Dense matrix with *dynamic size* (i.e., with unknown at compile time) and column-major storage.
 /// A MatrixDynamic_col is templated by the coefficient type (default: double).
 template <typename T = double>
-using MatrixDynamic_col = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
+using ToraMatrixDynamic_col = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
 /// Dense matrix with *fixed size* (known at compile time) and column-major storage.
 /// A MatrixNM_col is templated by the coefficient type and by the matrix dimensions (number of rows and columns).
 template <typename T, int M, int N>
-using MatrixNM_col = Eigen::Matrix<T, M, N, Eigen::ColMajor>;
+using ToraMatrixNM_col = Eigen::Matrix<T, M, N, Eigen::ColMajor>;
 
 ////template <typename T, int M, int N>
 ////using MatrixNMnoalign = Eigen::Matrix<T, M, N, Eigen::RowMajor | Eigen::DontAlign>;
@@ -54,34 +58,34 @@ using MatrixNM_col = Eigen::Matrix<T, M, N, Eigen::ColMajor>;
 /// Column vector with *dynamic size* (i.e., with size unknown at compile time).
 /// A VectorDynamic is templated by the type of its coefficients (default: double).
 template <typename T = double>
-using VectorDynamic = Eigen::Matrix<T, Eigen::Dynamic, 1, Eigen::ColMajor>;
+using ToraVectorDynamic = Eigen::Matrix<T, Eigen::Dynamic, 1, Eigen::ColMajor>;
 
 /// Row vector with *dynamic size* (i.e., with size unknown at compile time).
 /// A RowVectorDynamic is templated by the type of its coefficients (default: double).
 template <typename T = double>
-using RowVectorDynamic = Eigen::Matrix<T, 1, Eigen::Dynamic, Eigen::RowMajor>;
+using ToraRowVectorDynamic = Eigen::Matrix<T, 1, Eigen::Dynamic, Eigen::RowMajor>;
 
 /// Column vector with *fixed size* (known at compile time).
 /// A VectorN is templated by the type of its coefficients and the number of elements.
 template <typename T, int N>
-using VectorN = Eigen::Matrix<T, N, 1>;
+using ToraVectorN = Eigen::Matrix<T, N, 1>;
 
 /// Row vector with *fixed size* (known at compile time).
 /// A RowVectorN is templated by the type of its coefficients and the number of elements.
 template <typename T, int N>
-using RowVectorN = Eigen::Matrix<T, 1, N, Eigen::RowMajor>;
+using ToraRowVectorN = Eigen::Matrix<T, 1, N, Eigen::RowMajor>;
 
 // -----------------------------------------------------------------------------
 
 /// General-purpose column array with *dynamic size*.
 /// This class provides easy-access to coefficient-wise operations.
 template <typename T = double>
-using Array = Eigen::Array<T, Eigen::Dynamic, 1, Eigen::ColMajor>;
+using ToraArray = Eigen::Array<T, Eigen::Dynamic, 1, Eigen::ColMajor>;
 
 /// Column array with *fixed size* (known at compile time).
 /// A ArrayN is templated by the type of its coefficients and the number of elements.
 template <typename T, int N>
-using ArrayN = Eigen::Array<T, N, 1>;
+using ToraArrayN = Eigen::Array<T, N, 1>;
 
 // -----------------------------------------------------------------------------
 
@@ -90,48 +94,49 @@ using ArrayN = Eigen::Array<T, N, 1>;
 
 /// Reference to a dense matrix expression, with double coefficients.
 /// This allows writing non-template functions that can accept either a MatrixDynamic or a MatrixNM.
-using MatrixRef = Eigen::Ref<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>;
+using ToraMatrixRef = Eigen::Ref<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>;
 
 /// Constant reference to a dense matrix expression, with double coefficients.
 /// This allows writing non-template functions that can accept either a MatrixDynamic or a MatrixNM.
-using MatrixConstRef = const Eigen::Ref<const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>&;
+using ToraMatrixConstRef =
+    const Eigen::Ref<const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>&;
 
 /// Reference to a column vector expression, with double coefficients.
 /// This allows writing non-template functions that can accept either a VectorDynamic or a VectorN.
-using VectorRef = Eigen::Ref<Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor>>;
+using ToraVectorRef = Eigen::Ref<Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor>>;
 
 /// Constant reference to a column vector expression, with double coefficients.
 /// This allows writing non-template functions that can accept either a VectorDynamic or a RowVectorN.
-using VectorConstRef = const Eigen::Ref<const Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor>>&;
+using ToraVectorConstRef = const Eigen::Ref<const Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor>>&;
 
 /// Reference to a row vector expression, with double coefficients.
 /// This allows writing non-template functions that can accept either a RowVectorDynamic or a CVectorN.
-using RowVectorRef = Eigen::Ref<Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor>>;
+using ToraRowVectorRef = Eigen::Ref<Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor>>;
 
 /// Constant reference to a row vector expression, with double coefficients.
 /// This allows writing non-template functions that can accept either a RowVectorDynamic or a CVectorN.
-using RowVectorConstRef = const Eigen::Ref<const Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor>>&;
+using ToraRowVectorConstRef = const Eigen::Ref<const Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor>>&;
 
 /// Reference to an array expression, templated by coefficient type.
 /// This allows writing non-template functions that can accept either a ArrayDynamic or a ArrayN.
 template <typename T = double>
-using ArrayRef = Eigen::Ref<Eigen::Array<T, Eigen::Dynamic, Eigen::ColMajor>>&;
+using ToraArrayRef = Eigen::Ref<Eigen::Array<T, Eigen::Dynamic, Eigen::ColMajor>>&;
 
 /// Constant reference to an array expression, templated by coefficient type.
 /// This allows writing non-template functions that can accept either a Array or a ArrayN.
 template <typename T = double>
-using ArrayConstRef = const Eigen::Ref<const Eigen::Array<T, Eigen::Dynamic, 1, Eigen::ColMajor>>&;
+using ToraArrayConstRef = const Eigen::Ref<const Eigen::Array<T, Eigen::Dynamic, 1, Eigen::ColMajor>>&;
 
 // -----------------------------------------------------------------------------
 
 /// Sparse matrix representation.
 /// A SparseMatrix is an Eigen SparseMatrix with double coefficients, row-major storage order, and int indices.
-using SparseMatrix = Eigen::SparseMatrix<double, Eigen::RowMajor, int>;
+using ToraSparseMatrix = Eigen::SparseMatrix<double, Eigen::RowMajor, int>;
 
 /// Utility function for slicing a vector based on an array of indices.
 /// Return a new vector which only contains the elements with specified indices.
 template <typename T = double>
-VectorDynamic<T> SliceVector(VectorConstRef v, ArrayConstRef<int> indices) {
+ToraVectorDynamic<T> SliceVector(ToraVectorConstRef v, ToraArrayConstRef<int> indices) {
 #if EIGEN_VERSION_AT_LEAST(3, 4, 0)
   return v(indices);
 #else
