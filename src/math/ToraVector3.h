@@ -6,6 +6,7 @@
 #define TORA_ToraVector3_H
 
 namespace Tora {
+
 template <class Real = double>
 class ToraVector3 {
  private:
@@ -185,8 +186,6 @@ class ToraVector3 {
 
   /// Return a unit vector orthogonal to this vector
   ToraVector3<Real> GetOrthogonalVector() const;
-
-  ~ToraVector3();
 };
 
 }  // namespace Tora
