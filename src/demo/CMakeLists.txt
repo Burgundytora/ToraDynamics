@@ -1,3 +1,3 @@
-﻿# include_directories("E:/ToraDynamics/src/defines")
+﻿include_directories(${PROJECT_SOURCE_DIR})
 
-add_executable(demo demo.cc)
+add_executable(demo demo_logger.cc)
