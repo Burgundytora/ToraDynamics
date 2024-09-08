@@ -7,7 +7,7 @@ namespace Tora {
 // -----------------------------------------------------------------------------
 
 template <typename Real>
-ToraMatrix33<Real>::ToraMatrix33(const ChQuaternion<Real>& q) {
+ToraMatrix33<Real>::ToraMatrix33(const ToraQuaternion<Real>& q) {
   this->Set_A_quaternion(q);
 }
 
@@ -57,7 +57,7 @@ ToraVector3<Real> ToraMatrix33<Real>::operator*(const ToraVector3<Real>& v) cons
 }
 
 template <typename Real>
-inline void ToraMatrix33<Real>::Set_A_quaternion(const ChQuaternion<Real>& q) {
+inline void ToraMatrix33<Real>::Set_A_quaternion(const ToraQuaternion<Real>& q) {
   Real e0e0 = q.e0() * q.e0();
   Real e1e1 = q.e1() * q.e1();
   Real e2e2 = q.e2() * q.e2();
@@ -160,31 +160,8 @@ inline ToraVector3<Real> ToraMatrix33<Real>::Get_A_Eulero() const {
 }
 
 template <typename Real>
-inline ToraVector3<Real> ToraMatrix33<Real>::Get_A_Cardano() const {
-  ToraVector3<Real> car;
-
-  Real mel21 = (*this)(2, 1);
-  if (mel21 > 1) mel21 = 1;
-  if (mel21 < -1) mel21 = -1;
-
-  car.y() = std::asin(mel21);
-
-  Real arg2 = (*this)(2, 2) / std::cos(car.y());
-  if (arg2 > 1) arg2 = 1;
-  if (arg2 < -1) arg2 = -1;
-  Real arg3 = (*this)(1, 1) / std::cos(car.y());
-  if (arg3 > 1) arg3 = 1;
-  if (arg3 < -1) arg3 = -1;
-
-  car.z() = std::acos(arg2);
-  car.x() = std::acos(arg3);
-
-  return car;
-}
-
-template <typename Real>
-inline ChQuaternion<Real> ToraMatrix33<Real>::Get_A_quaternion() const {
-  ChQuaternion<Real> q;
+inline ToraQuaternion<Real> ToraMatrix33<Real>::Get_A_quaternion() const {
+  ToraQuaternion<Real> q;
   Real s, tr;
   Real half = (Real)0.5;
 

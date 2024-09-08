@@ -5,6 +5,9 @@
 #ifndef TORA_ToraVector3_H
 #define TORA_ToraVector3_H
 
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
+
 namespace Tora {
 
 template <class Real = double>
@@ -14,7 +17,7 @@ class ToraVector3 {
 
   /// Declaration of friend classes
   template <typename RealB>
-  friend class Vector3;
+  friend class ToraVector3;
 
  public:
   // CONSTRUCTORS
@@ -25,7 +28,7 @@ class ToraVector3 {
 
   /// Copy constructor with type change.
   template <class RealB>
-  Vector3(const Vector3<RealB>& other);
+  ToraVector3(const ToraVector3<RealB>& other);
 
   /// Access to components
   Real& x() { return m_data[0]; }
@@ -41,9 +44,9 @@ class ToraVector3 {
   // EIGEN INTER-OPERABILITY
   /// Construct a 3d vector from an Eigen vector expression.
   template <typename Derived>
-  Vector3(const Eigen::MatrixBase<Derived>& vec,
-          typename std::enable_if<(Derived::MaxRowsAtCompileTime == 1 || Derived::MaxColsAtCompileTime == 1),
-                                  Derived>::type* = 0) {
+  ToraVector3(const Eigen::MatrixBase<Derived>& vec,
+              typename std::enable_if<(Derived::MaxRowsAtCompileTime == 1 || Derived::MaxColsAtCompileTime == 1),
+                                      Derived>::type* = 0) {
     m_data[0] = vec(0);
     m_data[1] = vec(1);
     m_data[2] = vec(2);
@@ -170,7 +173,7 @@ class ToraVector3 {
 
   /// Return a normalized copy of this vector, with euclidean length = 1.
   /// Not to be confused with Normalize() which normalizes in place.
-  Vector3<Real> GetNormalized() const;
+  ToraVector3<Real> GetNormalized() const;
 
   /// Impose a new length to the vector, keeping the direction unchanged.
   void SetLength(Real s);
@@ -187,6 +190,557 @@ class ToraVector3 {
   /// Return a unit vector orthogonal to this vector
   ToraVector3<Real> GetOrthogonalVector() const;
 };
+
+// -----------------------------------------------------------------------------
+// Constructors
+
+template <class Real>
+inline ToraVector3<Real>::ToraVector3() {
+  m_data[0] = 0;
+  m_data[1] = 0;
+  m_data[2] = 0;
+}
+
+template <class Real>
+inline ToraVector3<Real>::ToraVector3(Real a) {
+  m_data[0] = a;
+  m_data[1] = a;
+  m_data[2] = a;
+}
+
+template <class Real>
+inline ToraVector3<Real>::ToraVector3(Real x, Real y, Real z) {
+  m_data[0] = x;
+  m_data[1] = y;
+  m_data[2] = z;
+}
+
+template <class Real>
+inline ToraVector3<Real>::ToraVector3(const ToraVector3<Real>& other) {
+  m_data[0] = other.m_data[0];
+  m_data[1] = other.m_data[1];
+  m_data[2] = other.m_data[2];
+}
+
+template <class Real>
+template <class RealB>
+inline ToraVector3<Real>::ToraVector3(const ToraVector3<RealB>& other) {
+  m_data[0] = static_cast<Real>(other.m_data[0]);
+  m_data[1] = static_cast<Real>(other.m_data[1]);
+  m_data[2] = static_cast<Real>(other.m_data[2]);
+}
+
+// -----------------------------------------------------------------------------
+// Assignments
+
+template <class Real>
+inline ToraVector3<Real>& ToraVector3<Real>::operator=(const ToraVector3<Real>& other) {
+  if (&other == this) return *this;
+  m_data[0] = other.m_data[0];
+  m_data[1] = other.m_data[1];
+  m_data[2] = other.m_data[2];
+  return *this;
+}
+
+template <class Real>
+template <class RealB>
+inline ToraVector3<Real>& ToraVector3<Real>::operator=(const ToraVector3<RealB>& other) {
+  m_data[0] = static_cast<Real>(other.m_data[0]);
+  m_data[1] = static_cast<Real>(other.m_data[1]);
+  m_data[2] = static_cast<Real>(other.m_data[2]);
+  return *this;
+}
+
+// -----------------------------------------------------------------------------
+// Sign operators
+
+template <class Real>
+inline ToraVector3<Real> ToraVector3<Real>::operator+() const {
+  return *this;
+}
+
+template <class Real>
+inline ToraVector3<Real> ToraVector3<Real>::operator-() const {
+  return ToraVector3<Real>(-m_data[0], -m_data[1], -m_data[2]);
+}
+
+// -----------------------------------------------------------------------------
+// Arithmetic operations
+
+template <class Real>
+inline ToraVector3<Real> ToraVector3<Real>::operator+(const ToraVector3<Real>& other) const {
+  ToraVector3<Real> v;
+
+  v.m_data[0] = m_data[0] + other.m_data[0];
+  v.m_data[1] = m_data[1] + other.m_data[1];
+  v.m_data[2] = m_data[2] + other.m_data[2];
+
+  return v;
+}
+
+template <class Real>
+inline ToraVector3<Real> ToraVector3<Real>::operator-(const ToraVector3<Real>& other) const {
+  ToraVector3<Real> v;
+
+  v.m_data[0] = m_data[0] - other.m_data[0];
+  v.m_data[1] = m_data[1] - other.m_data[1];
+  v.m_data[2] = m_data[2] - other.m_data[2];
+
+  return v;
+}
+
+template <class Real>
+inline ToraVector3<Real> ToraVector3<Real>::operator*(const ToraVector3<Real>& other) const {
+  ToraVector3<Real> v;
+
+  v.m_data[0] = m_data[0] * other.m_data[0];
+  v.m_data[1] = m_data[1] * other.m_data[1];
+  v.m_data[2] = m_data[2] * other.m_data[2];
+
+  return v;
+}
+
+template <class Real>
+inline ToraVector3<Real> ToraVector3<Real>::operator/(const ToraVector3<Real>& other) const {
+  ToraVector3<Real> v;
+
+  v.m_data[0] = m_data[0] / other.m_data[0];
+  v.m_data[1] = m_data[1] / other.m_data[1];
+  v.m_data[2] = m_data[2] / other.m_data[2];
+
+  return v;
+}
+
+template <class Real>
+inline ToraVector3<Real> ToraVector3<Real>::operator*(Real s) const {
+  ToraVector3<Real> v;
+
+  v.m_data[0] = m_data[0] * s;
+  v.m_data[1] = m_data[1] * s;
+  v.m_data[2] = m_data[2] * s;
+
+  return v;
+}
+
+template <class Real>
+inline ToraVector3<Real> ToraVector3<Real>::operator/(Real s) const {
+  Real oos = 1 / s;
+  ToraVector3<Real> v;
+
+  v.m_data[0] = m_data[0] * oos;
+  v.m_data[1] = m_data[1] * oos;
+  v.m_data[2] = m_data[2] * oos;
+
+  return v;
+}
+
+template <class Real>
+inline Real ToraVector3<Real>::operator^(const ToraVector3<Real>& other) const {
+  return this->Dot(other);
+}
+
+template <class Real>
+ToraVector3<Real> ToraVector3<Real>::operator%(const ToraVector3<Real>& other) const {
+  ToraVector3<Real> v;
+  v.Cross(*this, other);
+  return v;
+}
+
+template <class Real>
+inline ToraVector3<Real>& ToraVector3<Real>::operator%=(const ToraVector3<Real>& other) {
+  this->Cross(*this, other);
+  return *this;
+}
+
+template <class Real>
+inline ToraVector3<Real>& ToraVector3<Real>::operator+=(const ToraVector3<Real>& other) {
+  m_data[0] += other.m_data[0];
+  m_data[1] += other.m_data[1];
+  m_data[2] += other.m_data[2];
+
+  return *this;
+}
+
+template <class Real>
+inline ToraVector3<Real>& ToraVector3<Real>::operator-=(const ToraVector3<Real>& other) {
+  m_data[0] -= other.m_data[0];
+  m_data[1] -= other.m_data[1];
+  m_data[2] -= other.m_data[2];
+
+  return *this;
+}
+
+template <class Real>
+inline ToraVector3<Real>& ToraVector3<Real>::operator*=(const ToraVector3<Real>& other) {
+  m_data[0] *= other.m_data[0];
+  m_data[1] *= other.m_data[1];
+  m_data[2] *= other.m_data[2];
+
+  return *this;
+}
+
+template <class Real>
+inline ToraVector3<Real>& ToraVector3<Real>::operator/=(const ToraVector3<Real>& other) {
+  m_data[0] /= other.m_data[0];
+  m_data[1] /= other.m_data[1];
+  m_data[2] /= other.m_data[2];
+
+  return *this;
+}
+
+template <class Real>
+inline ToraVector3<Real>& ToraVector3<Real>::operator*=(Real s) {
+  m_data[0] *= s;
+  m_data[1] *= s;
+  m_data[2] *= s;
+
+  return *this;
+}
+
+template <class Real>
+inline ToraVector3<Real>& ToraVector3<Real>::operator/=(Real s) {
+  Real oos = 1 / s;
+
+  m_data[0] *= oos;
+  m_data[1] *= oos;
+  m_data[2] *= oos;
+
+  return *this;
+}
+
+// -----------------------------------------------------------------------------
+// SET Functions
+
+template <class Real>
+inline void ToraVector3<Real>::Set(Real x, Real y, Real z) {
+  m_data[0] = x;
+  m_data[1] = y;
+  m_data[2] = z;
+}
+
+template <class Real>
+inline void ToraVector3<Real>::Set(const ToraVector3<Real>& v) {
+  m_data[0] = v.m_data[0];
+  m_data[1] = v.m_data[1];
+  m_data[2] = v.m_data[2];
+}
+
+// -----------------------------------------------------------------------------
+// EQUAL Functions
+
+template <class Real>
+inline bool ToraVector3<Real>::Equals(const ToraVector3<Real>& other) const {
+  return (other.m_data[0] == m_data[0]) && (other.m_data[1] == m_data[1]) && (other.m_data[2] == m_data[2]);
+}
+
+template <class Real>
+inline bool ToraVector3<Real>::Equals(const ToraVector3<Real>& other, Real tol) const {
+  return (std::abs(other.m_data[0] - m_data[0]) < tol) && (std::abs(other.m_data[1] - m_data[1]) < tol) &&
+         (std::abs(other.m_data[2] - m_data[2]) < tol);
+}
+
+// FUNCTIONS
+
+template <class Real>
+inline void ToraVector3<Real>::Add(const ToraVector3<Real>& A, const ToraVector3<Real>& B) {
+  m_data[0] = A.m_data[0] + B.m_data[0];
+  m_data[1] = A.m_data[1] + B.m_data[1];
+  m_data[2] = A.m_data[2] + B.m_data[2];
+}
+
+template <class Real>
+inline void ToraVector3<Real>::Sub(const ToraVector3<Real>& A, const ToraVector3<Real>& B) {
+  m_data[0] = A.m_data[0] - B.m_data[0];
+  m_data[1] = A.m_data[1] - B.m_data[1];
+  m_data[2] = A.m_data[2] - B.m_data[2];
+}
+
+template <class Real>
+inline void ToraVector3<Real>::Mul(const ToraVector3<Real>& A, Real s) {
+  m_data[0] = A.m_data[0] * s;
+  m_data[1] = A.m_data[1] * s;
+  m_data[2] = A.m_data[2] * s;
+}
+
+template <class Real>
+inline void ToraVector3<Real>::Scale(Real s) {
+  m_data[0] *= s;
+  m_data[1] *= s;
+  m_data[2] *= s;
+}
+
+template <class Real>
+inline void ToraVector3<Real>::Cross(const ToraVector3<Real>& A, const ToraVector3<Real>& B) {
+  m_data[0] = (A.m_data[1] * B.m_data[2]) - (A.m_data[2] * B.m_data[1]);
+  m_data[1] = (A.m_data[2] * B.m_data[0]) - (A.m_data[0] * B.m_data[2]);
+  m_data[2] = (A.m_data[0] * B.m_data[1]) - (A.m_data[1] * B.m_data[0]);
+}
+
+template <class Real>
+inline ToraVector3<Real> ToraVector3<Real>::Cross(const ToraVector3<Real> other) const {
+  ToraVector3<Real> v;
+  v.Cross(*this, other);
+  return v;
+}
+
+template <class Real>
+inline Real ToraVector3<Real>::Dot(const ToraVector3<Real>& B) const {
+  return (m_data[0] * B.m_data[0]) + (m_data[1] * B.m_data[1]) + (m_data[2] * B.m_data[2]);
+}
+
+template <class Real>
+inline Real ToraVector3<Real>::Length() const {
+  return sqrt(Length2());
+}
+
+template <class Real>
+inline Real ToraVector3<Real>::Length2() const {
+  return this->Dot(*this);
+}
+
+template <class Real>
+inline bool ToraVector3<Real>::Normalize() {
+  Real length = this->Length();
+  if (length < std::numeric_limits<Real>::min()) {
+    m_data[0] = 1;
+    m_data[1] = 0;
+    m_data[2] = 0;
+    return false;
+  }
+  this->Scale(1 / length);
+  return true;
+}
+
+template <class Real>
+inline ToraVector3<Real> ToraVector3<Real>::GetNormalized() const {
+  ToraVector3<Real> v(*this);
+  v.Normalize();
+  return v;
+}
+
+template <class Real>
+inline void ToraVector3<Real>::SetLength(Real s) {
+  Normalize();
+  Scale(s);
+}
+
+template <class Real>
+inline void ToraVector3<Real>::DirToDxDyDz(ToraVector3<Real>& Vx, ToraVector3<Real>& Vy, ToraVector3<Real>& Vz,
+                                           const ToraVector3<Real>& Vsingular) const {
+  // set Vx.
+  if (this->IsNull())
+    Vx = ToraVector3<Real>(1, 0, 0);
+  else
+    Vx = this->GetNormalized();
+
+  Vz.Cross(Vx, Vsingular);
+  Real zlen = Vz.Length();
+
+  // if near singularity, change the singularity reference vector.
+  if (zlen < 0.0001) {
+    ToraVector3<Real> mVsingular;
+
+    if (std::abs(Vsingular.m_data[0]) < 0.9)
+      mVsingular = ToraVector3<Real>(1, 0, 0);
+    else if (std::abs(Vsingular.m_data[1]) < 0.9)
+      mVsingular = ToraVector3<Real>(0, 1, 0);
+    else if (std::abs(Vsingular.m_data[2]) < 0.9)
+      mVsingular = ToraVector3<Real>(0, 0, 1);
+
+    Vz.Cross(Vx, mVsingular);
+    zlen = Vz.Length();  // now should be nonzero length.
+  }
+
+  // normalize Vz.
+  Vz.Scale(1 / zlen);
+
+  // compute Vy.
+  Vy.Cross(Vz, Vx);
+}
+
+template <class Real>
+inline int ToraVector3<Real>::GetMaxComponent() const {
+  int idx = 0;
+  Real max = std::abs(m_data[0]);
+  if (std::abs(m_data[1]) > max) {
+    idx = 1;
+    max = m_data[1];
+  }
+  if (std::abs(m_data[2]) > max) {
+    idx = 2;
+    max = m_data[2];
+  }
+  return idx;
+}
+
+template <class Real>
+inline ToraVector3<Real> ToraVector3<Real>::GetOrthogonalVector() const {
+  int idx1 = this->GetMaxComponent();
+  int idx2 = (idx1 + 1) % 3;  // cycle to the next component
+  int idx3 = (idx2 + 1) % 3;  // cycle to the next component
+
+  // Construct v2 by rotating in the plane containing the maximum component
+  ToraVector3<Real> v2(-m_data[idx2], m_data[idx1], m_data[idx3]);
+
+  // Construct the normal vector
+  ToraVector3<Real> ortho = Cross(v2);
+  ortho.Normalize();
+  return ortho;
+}
+
+// -----------------------------------------------------------------------------
+// CONSTANTS
+
+const ToraVector3<double> VNULL(0., 0., 0.);
+const ToraVector3<double> VECT_X(1., 0., 0.);
+const ToraVector3<double> VECT_Y(0., 1., 0.);
+const ToraVector3<double> VECT_Z(0., 0., 1.);
+
+// -----------------------------------------------------------------------------
+// STATIC VECTOR MATH OPERATIONS
+//
+// These functions are here for people which prefer to use static
+// functions instead of ToraVector3 class' member functions.
+// NOTE: sometimes a wise adoption of the following functions may
+// give faster results rather than using overloaded operators +/-/* in
+// the vector class.
+// For best readability of our code, it is suggested not to use
+// these functions - use the member functions or operators of
+// the ToraVector3 class instead.
+
+inline std::ostream& operator<<(std::ostream& out, const ToraVector3<Real>& other) {
+  out << other.x() << " " << other.y() << " " << other.z() << " ";
+  return out;
+}
+
+template <class RealA, class RealB>
+RealA Vdot(const ToraVector3<RealA>& va, const ToraVector3<RealB>& vb) {
+  return (RealA)((va.x() * vb.x()) + (va.y() * vb.y()) + (va.z() * vb.z()));
+}
+
+template <class RealA>
+void Vset(ToraVector3<RealA>& v, RealA mx, RealA my, RealA mz) {
+  v.x() = mx;
+  v.y() = my;
+  v.z() = mz;
+}
+
+template <class RealA, class RealB>
+ToraVector3<RealA> Vadd(const ToraVector3<RealA>& va, const ToraVector3<RealB>& vb) {
+  ToraVector3<RealA> result;
+  result.x() = va.x() + vb.x();
+  result.y() = va.y() + vb.y();
+  result.z() = va.z() + vb.z();
+  return result;
+}
+
+template <class RealA, class RealB>
+ToraVector3<RealA> Vsub(const ToraVector3<RealA>& va, const ToraVector3<RealB>& vb) {
+  ToraVector3<RealA> result;
+  result.x() = va.x() - vb.x();
+  result.y() = va.y() - vb.y();
+  result.z() = va.z() - vb.z();
+  return result;
+}
+
+template <class RealA, class RealB>
+ToraVector3<RealA> Vcross(const ToraVector3<RealA>& va, const ToraVector3<RealB>& vb) {
+  ToraVector3<RealA> result;
+  result.x() = (va.y() * vb.z()) - (va.z() * vb.y());
+  result.y() = (va.z() * vb.x()) - (va.x() * vb.z());
+  result.z() = (va.x() * vb.y()) - (va.y() * vb.x());
+  return result;
+}
+
+template <class RealA, class RealB>
+ToraVector3<RealA> Vmul(const ToraVector3<RealA>& va, RealB fact) {
+  ToraVector3<RealA> result;
+  result.x() = va.x() * (RealA)fact;
+  result.y() = va.y() * (RealA)fact;
+  result.z() = va.z() * (RealA)fact;
+  return result;
+}
+
+template <class RealA>
+RealA Vlength(const ToraVector3<RealA>& va) {
+  return (RealA)va.Length();
+}
+
+template <class RealA>
+ToraVector3<RealA> Vnorm(const ToraVector3<RealA>& va) {
+  ToraVector3<RealA> result(va);
+  result.Normalize();
+  return result;
+}
+
+template <class RealA, class RealB>
+bool Vequal(const ToraVector3<RealA>& va, const ToraVector3<RealB>& vb) {
+  return (va == vb);
+}
+
+template <class RealA>
+bool Vnotnull(const ToraVector3<RealA>& va) {
+  return (va.x() != 0 || va.y() != 0 || va.z() != 0);
+}
+
+template <class RealA>
+ToraVector3<RealA> Vmin(const ToraVector3<RealA>& va, const ToraVector3<RealA>& vb) {
+  ToraVector3<RealA> result;
+  result.x() = std::min(va.x(), vb.x());
+  result.y() = std::min(va.y(), vb.y());
+  result.z() = std::min(va.z(), vb.z());
+  return result;
+}
+
+template <class RealA>
+ToraVector3<RealA> Vmax(const ToraVector3<RealA>& va, const ToraVector3<RealA>& vb) {
+  ToraVector3<RealA> result;
+  result.x() = std::max(va.x(), vb.x());
+  result.y() = std::max(va.y(), vb.y());
+  result.z() = std::max(va.z(), vb.z());
+  return result;
+}
+
+// Gets the zenith angle of a unit vector respect to YZ plane  ***OBSOLETE
+template <class RealA>
+double VangleYZplane(const ToraVector3<RealA>& va) {
+  return asin(Vdot(va, ToraVector3<RealA>(1, 0, 0)));
+}
+
+// Gets the zenith angle of a unit vector respect to YZ plane  ***OBSOLETE
+template <class RealA>
+double VangleYZplaneNorm(const ToraVector3<RealA>& va) {
+  return acos(Vdot(va, ToraVector3<RealA>(1, 0, 0)));
+}
+
+// Gets the angle of the projection on the YZ plane respect to
+// the Y vector, as spinning about X.
+template <class RealA>
+double VangleRX(const ToraVector3<RealA>& va) {
+  Vector vproj;
+  vproj.x() = 0;
+  vproj.y() = va.y();
+  vproj.z() = va.z();
+  vproj = Vnorm(vproj);
+  if (vproj.x() == 1) return 0;
+  return acos(vproj.y());
+}
+
+// The reverse of the two previous functions, gets the vector
+// given the angle above the normal to YZ plane and the angle
+// of rotation on X
+template <class RealA>
+ToraVector3<RealA> VfromPolar(double norm_angle, double pol_angle) {
+  ToraVector3<> res;
+  double projlen;
+  res.x() = cos(norm_angle);  // 1) rot 'norm.angle'about z
+  res.y() = sin(norm_angle);
+  res.z() = 0;
+  projlen = res.y();
+  res.y() = projlen * cos(pol_angle);
+  res.z() = projlen * sin(pol_angle);
+  return res;
+}
 
 }  // namespace Tora
 

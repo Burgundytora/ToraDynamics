@@ -26,6 +26,37 @@ static const Real LOG10E = 0.43429448190325182765;
 static const Real LN2 = 0.69314718055994530941;
 static const Real LN10 = 2.30258509299404568402;
 
+/// Clamp and modify the specified value to lie within the given limits.
+template <typename T>
+void ClampValue(T& value, T limitMin, T limitMax) {
+  if (value < limitMin)
+    value = limitMin;
+  else if (value > limitMax)
+    value = limitMax;
+}
+
+/// Clamp the specified value to lie within the given limits.
+template <typename T>
+T Clamp(T value, T limitMin, T limitMax) {
+  if (value < limitMin) return limitMin;
+  if (value > limitMax) return limitMax;
+
+  return value;
+}
+
+template <typename T>
+T Atan2(T mcos, T msin) {
+  T ret;
+  if (fabs(mcos) < 0.707) {
+    ret = acos(mcos);
+    if (msin < 0.0) ret = -ret;
+  } else {
+    ret = asin(msin);
+    if (mcos < 0.0) ret = PI - ret;
+  }
+  return ret;
+}
+
 }  // end namespace Tora
 
 #endif

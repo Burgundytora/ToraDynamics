@@ -7,26 +7,26 @@
 
 namespace Tora {}  // namespace Tora
 
-// Define Eigen::eigen_assert_exception. Note that this must precede inclusion of Eigen headers.
-// Required for Eigen 3.3.8 (bug in Eigen?)
-namespace Eigen {
-static const bool should_raise_an_assert = false;
+// // Define Eigen::eigen_assert_exception. Note that this must precede inclusion of Eigen headers.
+// // Required for Eigen 3.3.8 (bug in Eigen?)
+// namespace Eigen {
+// static const bool should_raise_an_assert = false;
 
-// Used to avoid to raise two exceptions at a time in which case the exception is not properly caught.
-// This may happen when a second exceptions is triggered in a destructor.
-static bool no_more_assert = false;
-////static bool report_on_cerr_on_assert_failure = true;
+// // Used to avoid to raise two exceptions at a time in which case the exception is not properly caught.
+// // This may happen when a second exceptions is triggered in a destructor.
+// static bool no_more_assert = false;
+// ////static bool report_on_cerr_on_assert_failure = true;
 
-struct eigen_assert_exception {
-  eigen_assert_exception(void) {}
-  ~eigen_assert_exception() { Eigen::no_more_assert = false; }
-};
+// struct eigen_assert_exception {
+//   eigen_assert_exception(void) {}
+//   ~eigen_assert_exception() { Eigen::no_more_assert = false; }
+// };
 
-struct eigen_static_assert_exception {
-  eigen_static_assert_exception(void) {}
-  ~eigen_static_assert_exception() { Eigen::no_more_assert = false; }
-};
-}  // end namespace Eigen
+// struct eigen_static_assert_exception {
+//   eigen_static_assert_exception(void) {}
+//   ~eigen_static_assert_exception() { Eigen::no_more_assert = false; }
+// };
+// }  // end namespace Eigen
 
 namespace Tora {
 
@@ -133,15 +133,15 @@ using ToraArrayConstRef = const Eigen::Ref<const Eigen::Array<T, Eigen::Dynamic,
 /// A SparseMatrix is an Eigen SparseMatrix with double coefficients, row-major storage order, and int indices.
 using ToraSparseMatrix = Eigen::SparseMatrix<double, Eigen::RowMajor, int>;
 
-/// Utility function for slicing a vector based on an array of indices.
-/// Return a new vector which only contains the elements with specified indices.
-template <typename T = double>
-ToraVectorDynamic<T> SliceVector(ToraVectorConstRef v, ToraArrayConstRef<int> indices) {
-#if EIGEN_VERSION_AT_LEAST(3, 4, 0)
-  return v(indices);
-#else
-  return indices.unaryExpr(v);
-#endif
-}
+// /// Utility function for slicing a vector based on an array of indices.
+// /// Return a new vector which only contains the elements with specified indices.
+// template <typename T = double>
+// ToraVectorDynamic<T> SliceVector(ToraVectorConstRef v, ToraArrayConstRef<int> indices) {
+// #if EIGEN_VERSION_AT_LEAST(3, 4, 0)
+//   return v(indices);
+// #else
+//   return indices.unaryExpr(v);
+// #endif
+// }
 
 }  // namespace Tora

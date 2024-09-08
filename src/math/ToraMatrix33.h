@@ -9,7 +9,7 @@
 
 #include "ToraMatrix.h"
 #include "ToraQuaternion.h"
-#include "ToraVector33.h"
+#include "ToraVector3.h"
 
 namespace Tora {
 
@@ -102,8 +102,6 @@ class ToraMatrix33 : public Eigen::Matrix<Real, 3, 3, Eigen::RowMajor> {
   ToraVector3<Real> GetAx() const;
 };
 
-}  // namespace Tora
-
 // -----------------------------------------------------------------------------
 
 /// Multiply a transposed 3x3 matrix with a vector.
@@ -139,5 +137,7 @@ ToraMatrix33<Real> TensorProduct(const ToraVector3<Real>& vA, const ToraVector3<
   T(2, 2) = vA.z() * vB.z();
   return T;
 }
+
+}  // namespace Tora
 
 #endif
